@@ -9,26 +9,34 @@
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); color: var(--white); font-family: var(--font); overflow: hidden; }
         
         #lines { position: fixed; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 1000; }
+        
+        /* The Opening Screen */
         #audio-trigger { position: fixed; inset: 0; background: black; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--red); text-align: center; }
 
-        .terminal-box { background: rgba(10, 10, 10, 0.98); border: 2px solid var(--red); padding: 40px; border-radius: 4px; box-shadow: 0 0 50px rgba(255, 0, 0, 0.4), inset 0 0 20px rgba(255, 0, 0, 0.1); max-width: 750px; width: 85%; display: flex; flex-direction: column; align-items: center; position: relative; animation: breathe 8s infinite ease-in-out; }
+        /* The 3D Glowing Box */
+        .terminal-box { 
+            background: rgba(10, 10, 10, 0.98); 
+            border: 2px solid var(--red); 
+            padding: 40px; 
+            border-radius: 4px; 
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.4), inset 0 0 20px rgba(255, 0, 0, 0.1); 
+            max-width: 750px; width: 85%; 
+            display: flex; flex-direction: column; align-items: center; 
+            position: relative; animation: breathe 8s infinite ease-in-out; 
+        }
         
         .screen { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .active { display: flex; }
 
-        /* PHONE CALL UI */
         #call-ui { display: none; text-align: center; }
         .incoming-text { letter-spacing: 5px; color: var(--red); animation: blink 1s infinite; }
-        .call-btn { background: #0f0; color: black; padding: 15px 40px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-top: 20px; border: none; font-family: var(--font); box-shadow: 0 0 20px rgba(0,255,0,0.4); }
+        .call-btn { background: #0f0; color: black; padding: 15px 40px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-top: 20px; border: none; font-family: var(--font); }
         
-        /* GHOST FILE STYLE */
-        .ghost-file { opacity: 0.03; font-size: 10px; margin-top: 30px; cursor: default; transition: 0.5s; color: var(--red); pointer-events: none; }
-        .ghost-active { opacity: 0.6 !important; cursor: pointer !important; pointer-events: auto !important; animation: glitch-flicker 2s infinite; }
+        .ghost-file { opacity: 0.01; font-size: 10px; margin-top: 30px; color: var(--red); pointer-events: none; transition: opacity 2s ease-in; }
+        .ghost-active { opacity: 0.4 !important; cursor: pointer !important; pointer-events: auto !important; animation: glitch-flicker 3s infinite; }
 
-        /* MISSING POSTER */
         .missing-poster { border: 8px solid #ddd; background: #eee; color: black; padding: 20px; width: 220px; font-family: 'Arial Black', sans-serif; text-align: center; transform: rotate(-1deg); box-shadow: 0 0 30px rgba(255,0,0,0.3); margin: 0 auto; }
-        .missing-poster h1 { margin: 0; font-size: 32px; background: black; color: white; padding: 5px; letter-spacing: -1px; }
-        .missing-photo { width: 100%; height: 180px; background: #bbb; margin: 15px 0; border: 2px inset #999; display: flex; align-items: center; justify-content: center; color: #444; font-size: 10px; }
+        .missing-poster h1 { margin: 0; font-size: 32px; background: black; color: white; padding: 5px; }
 
         .file-row { width: 100%; max-width: 400px; padding: 15px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #1a1a1a; cursor: pointer; }
         .redact { color: #111; background: #111; cursor: pointer; padding: 0 4px; }
@@ -37,7 +45,7 @@
         .timer { font-size: 3.5rem; color: var(--red); letter-spacing: 5px; margin: 10px 0; }
 
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        @keyframes glitch-flicker { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.2; } 52% { opacity: 0.9; } }
+        @keyframes glitch-flicker { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.2; } }
         @keyframes breathe { 0%, 100% { box-shadow: 0 0 40px rgba(255, 0, 0, 0.2); transform: scale(1); } 50% { box-shadow: 0 0 70px rgba(255, 0, 0, 0.5); transform: scale(1.01); } }
     </style>
 </head>
@@ -57,7 +65,6 @@
         
         <div id="call-ui">
             <p class="incoming-text">INCOMING ENCRYPTED CALL</p>
-            <p style="font-size: 10px; color: #555;">ID: UNKNOWN_SOURCE</p>
             <button class="call-btn" onclick="startFakeCall()">ACCEPT</button>
         </div>
 
@@ -67,7 +74,7 @@
 
 <section id="scr-dir" class="screen">
     <div class="terminal-box">
-        <h1 style="font-size: 10px; color: #444; margin-bottom: 20px; letter-spacing: 5px;">/ROOT/HIDDEN_ARCHIVE</h1>
+        <h1 style="font-size: 10px; color: #444; margin-bottom: 20px;">/ROOT/HIDDEN_ARCHIVE</h1>
         <div id="dir-container" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
         <div id="ghost-file" class="ghost-file" onclick="openFile(7)">HIDDEN_METADATA_08.X</div>
     </div>
@@ -79,9 +86,7 @@
         <div id="secret-content" style="display:none; margin-top: 10px;">
             <div class="missing-poster">
                 <h1>MISSING</h1>
-                <div class="missing-photo">IMAGE_CORRUPTED</div>
                 <p style="font-weight:bold; margin: 5px 0; font-size: 18px;">ZAC [REDACTED]</p>
-                <p style="font-size: 9px; line-height: 1.2;">LAST SEEN NEAR DARK PARKING LOT.<br>DO NOT ATTEMPT CONTACT.</p>
             </div>
         </div>
         <div style="display:flex; gap: 20px;">
@@ -97,7 +102,8 @@
 
     function initAudio() {
         document.getElementById('audio-trigger').style.display = 'none';
-        window.speechSynthesis.getVoices(); // Warm up TTS
+        showScreen('scr-lock'); // This fixes the black screen
+        window.speechSynthesis.getVoices(); 
     }
 
     function startFakeCall() {
@@ -105,10 +111,7 @@
         const msg = new SpeechSynthesisUtterance("Every second I remain silent, the disappearance of Zac feels heavier. You should not have opened these files. He is watching you now.");
         msg.pitch = 0.5; msg.rate = 0.8;
         window.speechSynthesis.speak(msg);
-        
-        msg.onend = () => {
-            document.getElementById('unlock-btn').style.display = 'block';
-        };
+        msg.onend = () => { document.getElementById('unlock-btn').style.display = 'block'; };
     }
 
     const story = [
@@ -119,7 +122,7 @@
         "DOSSIER_005: Every image was captured by <span class='redact' onclick='revealName(this, 5)'>#####</span>.",
         "DOSSIER_006: Owen's final recording names <span class='redact' onclick='revealName(this, 6)'>#####</span>.",
         "DOSSIER_007: The figure standing behind you is <span class='redact' onclick='revealName(this, 7)'>#####</span>.",
-        "DELETED_DATA: This file was never meant to be recovered. The poster was printed before the body was even found."
+        "DELETED_DATA: Subject status remains unknown."
     ];
 
     function devBypass() {
@@ -170,10 +173,7 @@
             row.onclick = () => openFile(i);
             container.appendChild(row);
         }
-        // Handle Ghost File
-        if (revealedCount >= 7) {
-            document.getElementById('ghost-file').classList.add('ghost-active');
-        }
+        if (revealedCount >= 7) { document.getElementById('ghost-file').classList.add('ghost-active'); }
     }
 
     function openFile(idx) {
@@ -191,26 +191,21 @@
         } else {
             let i = 0; let full = story[idx];
             const type = setInterval(() => {
-                i++; out.innerHTML = full.substring(0, i);
+                if (full.charAt(i) === '<') i = full.indexOf('>', i) + 1; else i++;
+                out.innerHTML = full.substring(0, i);
                 if (i >= full.length) { clearInterval(type); out.innerHTML = full; }
             }, 20);
         }
     }
 
     function revealName(el, num) {
-        if (!el.classList.contains('revealed')) {
-            el.innerText = "ZAC"; el.className = "revealed";
-            revealedCount++;
-        }
+        if (!el.classList.contains('revealed')) { el.innerText = "ZAC"; el.className = "revealed"; revealedCount++; }
         document.getElementById('next-btn').style.display = "block";
     }
 
     function backToDir() { showScreen('scr-dir'); renderDir(); }
 
-    function finalLock() {
-        localStorage.setItem('final_done', 'true');
-        location.reload();
-    }
+    function finalLock() { localStorage.setItem('final_done', 'true'); location.reload(); }
 </script>
 </body>
 </html>
