@@ -25,7 +25,6 @@
             pointer-events: none; z-index: 1000; 
         }
 
-        /* START OVERLAY */
         #audio-trigger {
             position: fixed; inset: 0; background: black; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -47,7 +46,6 @@
             animation: breathe 8s infinite ease-in-out;
         }
 
-        /* 3D HEADER WITH INTENSE GLOW */
         .owen-header {
             color: var(--red);
             font-size: clamp(2.5rem, 9vw, 4rem);
@@ -55,32 +53,21 @@
             margin: 0 0 10px 0;
             text-transform: uppercase;
             font-weight: 900;
-            text-shadow: 
-                1px 1px 0px var(--dark-red), 
-                3px 3px 0px #400000, 
-                0 0 20px rgba(255, 0, 0, 0.8);
+            text-shadow: 1px 1px 0px var(--dark-red), 3px 3px 0px #400000, 0 0 20px rgba(255, 0, 0, 0.8);
             animation: header-glitch 5s infinite;
         }
 
-        /* CUSTOM ERROR POPUP */
         #error-popup {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            background: var(--red);
-            color: black;
-            padding: 20px;
-            font-weight: bold;
-            border: 4px solid white;
-            z-index: 5000;
-            display: none;
-            text-align: center;
+            background: var(--red); color: black;
+            padding: 20px; font-weight: bold; border: 4px solid white;
+            z-index: 5000; display: none; text-align: center;
             box-shadow: 0 0 100px rgba(255,0,0,1);
         }
 
-        /* SCREEN SHAKE EFFECT */
         .shake { animation: shake 0.2s cubic-bezier(.36,.07,.19,.97) both; }
-
         @keyframes shake {
             10%, 90% { transform: translate3d(-1px, 0, 0); }
             20%, 80% { transform: translate3d(2px, 0, 0); }
@@ -92,7 +79,6 @@
             0%, 90%, 100% { transform: skew(0deg); filter: blur(0); }
             91% { transform: skew(15deg); filter: blur(2px); opacity: 0.7; }
             93% { transform: skew(-15deg); }
-            95% { transform: skew(0deg); }
         }
 
         @keyframes breathe {
@@ -104,8 +90,10 @@
         .active { display: flex; }
 
         #log-container { text-align: left; font-size: 13px; color: var(--red); width: 280px; height: 150px; overflow: hidden; margin: 20px 0; }
-        .file-row { width: 100%; max-width: 400px; padding: 12px 0; display: flex; justify-content: space-between; cursor: pointer; border-bottom: 1px solid #150000; }
-        .file-row:hover { background: rgba(255,0,0,0.1); color: var(--red); }
+        .file-row { width: 100%; max-width: 400px; padding: 12px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #150000; }
+        .unlocked { cursor: pointer; }
+        .unlocked:hover { background: rgba(255,0,0,0.1); color: var(--red); }
+        .locked { opacity: 0.2; cursor: not-allowed; }
 
         #text-output { font-size: 1.1rem; line-height: 1.6; text-align: left; min-height: 250px; width: 100%; }
         .redact { color: #111; background: #111; cursor: pointer; }
@@ -121,21 +109,21 @@
 <body onload="checkInitialState()">
 
 <div id="audio-trigger" onclick="initAudio()">
-    <h2 style="letter-spacing:10px">CRITICAL ERROR</h2>
-    <p style="opacity: 0.5; font-size: 10px;">[ CLICK TO RESTORE SYSTEM ]</p>
+    <h2 style="letter-spacing:10px">SYSTEM BREACH</h2>
+    <p style="opacity: 0.5; font-size: 10px;">[ CLICK TO RESTORE DATA ACCESS ]</p>
 </div>
 
 <div id="lines"></div>
 <div id="flash"></div>
-<div id="error-popup">ALERT: ILLEGAL ACCESS DETECTED<br>IP LOGGED. AUTHORITIES NOTIFIED.</div>
+<div id="error-popup">CRITICAL ERROR: UNAUTHORIZED USER<br>ENCRYPTION BREACH LOGGED.</div>
 
 <section id="scr-lock" class="screen">
     <div class="terminal-box" id="main-box">
         <h1 class="owen-header">OWEN FILES</h1>
         <div style="font-size: 40px; color: var(--red); cursor: pointer;" onclick="devBypass()">🔒</div>
         <div id="timer" class="timer">04:00:00</div>
-        <p id="lock-msg" style="color: #444; font-size: 9px; letter-spacing: 2px;">ENCRYPTION_LAYER_07_ACTIVE</p>
-        <button id="unlock-btn" class="sys-btn" onclick="startBootSequence()">[ DECRYPT_FILES ]</button>
+        <p id="lock-msg" style="color: #444; font-size: 9px; letter-spacing: 2px;">SECURE_ROOT_ACCESS_REQUIRED</p>
+        <button id="unlock-btn" class="sys-btn" onclick="startBootSequence()">[ DECRYPT_ARCHIVE ]</button>
     </div>
 </section>
 
@@ -156,8 +144,8 @@
     <div class="terminal-box">
         <div id="text-output"></div>
         <div style="display:flex; gap: 20px;">
-            <button id="next-btn" class="sys-btn" onclick="backToDir()">[ RETURN ]</button>
-            <button id="final-btn" class="sys-btn" onclick="finalLock()">[ PURGE ]</button>
+            <button id="next-btn" class="sys-btn" onclick="backToDir()">[ RETURN_TO_ROOT ]</button>
+            <button id="final-btn" class="sys-btn" onclick="finalLock()">[ PURGE_ALL_DATA ]</button>
         </div>
     </div>
 </section>
@@ -166,15 +154,15 @@
     let audioCtx, gainNode;
     let clickCount = 0;
     let errorActive = false;
+    let unlockedProgress = 0; // Tracks which file they are on
 
     function initAudio() {
         document.getElementById('audio-trigger').style.display = 'none';
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
         const osc = audioCtx.createOscillator();
         gainNode = audioCtx.createGain();
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(50, audioCtx.currentTime); 
+        osc.frequency.setValueAtTime(45, audioCtx.currentTime); 
         gainNode.gain.setValueAtTime(0.015, audioCtx.currentTime);
         osc.connect(gainNode);
         gainNode.connect(audioCtx.destination);
@@ -208,27 +196,23 @@
     function devBypass() {
         if(errorActive) return;
         clickCount++;
-        playSound(200, 'square', 0.1, 0.1);
-        
+        playSound(150, 'square', 0.1, 0.1);
         if (clickCount === 3) {
             document.getElementById('unlock-btn').style.display = "block";
             document.getElementById('timer').innerText = "00:00:00";
-            playSound(800, 'sine', 0.2, 0.5);
-        } else if (clickCount > 5) {
-            triggerError();
-        }
+            playSound(700, 'sine', 0.2, 0.4);
+        } else if (clickCount > 6) { triggerError(); }
     }
 
     function triggerError() {
         errorActive = true;
         document.getElementById('error-popup').style.display = 'block';
         document.getElementById('main-box').classList.add('shake');
-        playSound(100, 'sawtooth', 0.3, 1);
+        playSound(80, 'sawtooth', 0.3, 1.5);
         setTimeout(() => {
             document.getElementById('error-popup').style.display = 'none';
             document.getElementById('main-box').classList.remove('shake');
-            clickCount = 0;
-            errorActive = false;
+            clickCount = 0; errorActive = false;
         }, 2000);
     }
 
@@ -261,11 +245,11 @@
     function startBootSequence() {
         showScreen('scr-boot');
         const log = document.getElementById('log-container');
-        const lines = ["> BYPASSING...", "> ACCESS_GRANTED", "> RECOVERING...", "> READY."];
+        const lines = ["> AUTHENTICATING...", "> ACCESS_GRANTED", "> LOADING_ROOT...", "> READY."];
         let i = 0;
         const logInt = setInterval(() => {
             log.innerHTML += lines[i] + "<br>";
-            playSound(400, 'sine', 0.05, 0.05);
+            playSound(300, 'sine', 0.05, 0.05);
             i++;
             if(i >= lines.length) { clearInterval(logInt); setTimeout(() => { enterDirectory(); }, 800); }
         }, 300);
@@ -281,11 +265,17 @@
     function renderDir() {
         const container = document.getElementById('dir-container');
         container.innerHTML = "";
-        for (let i = 1; i <= 7; i++) {
+        for (let i = 0; i < 7; i++) {
             const row = document.createElement('div');
-            row.className = `file-row`;
-            row.innerHTML = `<span>RECORD_00${i}.LOG</span> <span>[OPEN]</span>`;
-            row.onclick = () => openFile(i - 1);
+            const isUnlocked = i <= unlockedProgress;
+            row.className = `file-row ${isUnlocked ? 'unlocked' : 'locked'}`;
+            
+            let status = "[LOCKED]";
+            if (i < unlockedProgress) status = "[READ]";
+            else if (i === unlockedProgress) status = "[OPEN]";
+
+            row.innerHTML = `<span>RECORD_00${i+1}.LOG</span> <span>${status}</span>`;
+            if(isUnlocked) row.onclick = () => openFile(i);
             container.appendChild(row);
         }
     }
@@ -300,13 +290,20 @@
             if (fullHtml.charAt(i) === '<') i = fullHtml.indexOf('>', i) + 1;
             else i++;
             out.innerHTML = fullHtml.substring(0, i);
-            if (i % 2 === 0) playSound(150, 'sine', 0.05, 0.02);
+            if (i % 2 === 0) playSound(180, 'sine', 0.03, 0.02);
             if (i >= fullHtml.length) { clearInterval(typeTimer); out.innerHTML = fullHtml; }
-        }, 25);
+        }, 20);
     }
 
     function revealName(el, num) {
-        playSound(80, 'square', 0.1, 0.2);
+        playSound(100, 'square', 0.1, 0.2);
+        el.innerText = "ZAC"; el.className = "revealed";
+        
+        // Progress logic: Unlock next file if they reveal the name
+        if (unlockedProgress === num - 1) {
+            unlockedProgress = num;
+        }
+
         if (num === 7) {
             document.getElementById('flash').style.display = 'block';
             setTimeout(() => { document.getElementById('flash').style.display = 'none'; }, 100);
@@ -314,7 +311,6 @@
         } else {
             document.getElementById('next-btn').style.display = "block";
         }
-        el.innerText = "ZAC"; el.className = "revealed";
     }
 
     function backToDir() { enterDirectory(); }
@@ -322,8 +318,8 @@
     function finalLock() {
         localStorage.setItem('final_done', 'true');
         localStorage.setItem('lock_time', new Date().getTime() + (4 * 60 * 60 * 1000));
-        playSound(50, 'sawtooth', 0.2, 1);
-        document.getElementById('lock-msg').innerText = "SYSTEM_WIPED_BY_ADMIN";
+        playSound(40, 'sawtooth', 0.3, 1.5);
+        document.getElementById('lock-msg').innerText = "ARCHIVE_PERMANENTLY_PURGED";
         document.getElementById('unlock-btn').style.display = "none";
         runClock();
     }
