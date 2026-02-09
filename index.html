@@ -1,328 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TERMINAL | ZAC_V_FINAL</title>
-    <style>
-        :root { 
-            --bg: #050505; 
-            --red: #ff0000; 
-            --dark-red: #800000;
-            --white: #eee; 
-            --font: 'Courier New', Courier, monospace; 
-        }
+<meta charset="UTF-8">
+<title>OWEN FILES</title>
 
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: var(--bg); color: var(--white); 
-            font-family: var(--font); overflow: hidden; 
-        }
-        
-        #lines { 
-            position: fixed; inset: 0; 
-            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); 
-            pointer-events: none; z-index: 1000; 
-        }
+<style>
+html,body{
+margin:0;
+padding:0;
+width:100%;
+height:100%;
+background:#777;
+color:#111;
+font-family:monospace;
+overflow:hidden;
+}
 
-        #audio-trigger {
-            position: fixed; inset: 0; background: black; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; color: var(--red); text-align: center;
-        }
+/* old tv effect */
+body::before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:
+repeating-linear-gradient(
+to bottom,
+rgba(0,0,0,.05),
+rgba(0,0,0,.05) 1px,
+transparent 1px,
+transparent 3px
+);
+pointer-events:none;
+animation:flicker .15s infinite;
+}
+@keyframes flicker{
+0%{opacity:.9}
+50%{opacity:1}
+100%{opacity:.95}
+}
 
-        .terminal-box {
-            background: rgba(8, 8, 8, 0.95);
-            border: 1px solid var(--red);
-            padding: 40px;
-            border-radius: 4px;
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.2);
-            max-width: 750px;
-            width: 85%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            animation: breathe 8s infinite ease-in-out;
-        }
+/* timer screen */
+#timerScreen{
+position:absolute;
+inset:0;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+}
+#timer{
+font-size:48px;
+margin:20px;
+}
+#password{
+position:absolute;
+top:10px;
+right:10px;
+}
 
-        .owen-header {
-            color: var(--red);
-            font-size: clamp(2.5rem, 9vw, 4rem);
-            letter-spacing: 15px;
-            margin: 0 0 10px 0;
-            text-transform: uppercase;
-            font-weight: 900;
-            text-shadow: 1px 1px 0px var(--dark-red), 3px 3px 0px #400000, 0 0 20px rgba(255, 0, 0, 0.8);
-            animation: header-glitch 5s infinite;
-        }
+/* calling screen */
+#callScreen{
+display:none;
+position:absolute;
+inset:0;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+}
+.phone{
+font-size:80px;
+animation:ring 1s infinite;
+}
+@keyframes ring{
+0%{transform:rotate(0)}
+25%{transform:rotate(5deg)}
+75%{transform:rotate(-5deg)}
+100%{transform:rotate(0)}
+}
 
-        #error-popup {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--red); color: black;
-            padding: 20px; font-weight: bold; border: 4px solid white;
-            z-index: 5000; display: none; text-align: center;
-            box-shadow: 0 0 100px rgba(255,0,0,1);
-        }
+/* directory */
+#directory{
+display:none;
+padding:20px;
+}
+.file{
+cursor:pointer;
+padding:10px;
+margin:10px 0;
+border:1px solid #444;
+animation:open .5s;
+}
+@keyframes open{
+from{opacity:0}
+to{opacity:1}
+}
 
-        .shake { animation: shake 0.2s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
+/* file viewer */
+#viewer{
+display:none;
+padding:20px;
+}
+.redacted{
+background:#111;
+color:#111;
+padding:2px 6px;
+cursor:pointer;
+}
+.redacted.open{
+background:none;
+color:#111;
+border-bottom:1px solid #111;
+}
 
-        @keyframes header-glitch {
-            0%, 90%, 100% { transform: skew(0deg); filter: blur(0); }
-            91% { transform: skew(15deg); filter: blur(2px); opacity: 0.7; }
-            93% { transform: skew(-15deg); }
-        }
+/* crash */
+#crash{
+display:none;
+position:absolute;
+inset:0;
+background:#666;
+color:#000;
+font-size:24px;
+align-items:center;
+justify-content:center;
+animation:glitch .1s infinite;
+}
+@keyframes glitch{
+0%{transform:translate(0)}
+25%{transform:translate(2px,0)}
+50%{transform:translate(-2px,0)}
+}
 
-        @keyframes breathe {
-            0%, 100% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.1); transform: scale(1); }
-            50% { box-shadow: 0 0 60px rgba(255, 0, 0, 0.4); transform: scale(1.01); }
-        }
+/* revealed name */
+.reveal{
+color:#b00000;
+font-weight:bold;
+text-shadow:0 0 8px red;
+}
 
-        .screen { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .active { display: flex; }
-
-        #log-container { text-align: left; font-size: 13px; color: var(--red); width: 280px; height: 150px; overflow: hidden; margin: 20px 0; }
-        .file-row { width: 100%; max-width: 400px; padding: 12px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #150000; }
-        .unlocked { cursor: pointer; }
-        .unlocked:hover { background: rgba(255,0,0,0.1); color: var(--red); }
-        .locked { opacity: 0.2; cursor: not-allowed; }
-
-        #text-output { font-size: 1.1rem; line-height: 1.6; text-align: left; min-height: 250px; width: 100%; }
-        .redact { color: #111; background: #111; cursor: pointer; }
-        .revealed { color: var(--red) !important; background: transparent !important; font-weight: bold; text-shadow: 0 0 10px var(--red); }
-
-        .sys-btn { margin-top: 25px; background: transparent; border: 1px solid var(--red); color: var(--red); padding: 10px 25px; cursor: pointer; display: none; text-transform: uppercase; letter-spacing: 3px; }
-        .sys-btn:hover { background: var(--red); color: #000; }
-        
-        .timer { font-size: 3.5rem; color: var(--red); letter-spacing: 5px; font-weight: 200; margin: 10px 0; }
-        #flash { position: fixed; inset: 0; background: var(--red); z-index: 2000; display: none; }
-    </style>
+/* secret tab */
+#secret{
+position:absolute;
+top:10px;
+left:10px;
+opacity:.3;
+cursor:pointer;
+}
+</style>
 </head>
-<body onload="checkInitialState()">
 
-<div id="audio-trigger" onclick="initAudio()">
-    <h2 style="letter-spacing:10px">SYSTEM BREACH</h2>
-    <p style="opacity: 0.5; font-size: 10px;">[ CLICK TO RESTORE DATA ACCESS ]</p>
+<body>
+
+<div id="timerScreen">
+<div id="secret">secret</div>
+<h1>OWEN FILES</h1>
+<div id="timer">loading</div>
+<input id="password" placeholder="password">
 </div>
 
-<div id="lines"></div>
-<div id="flash"></div>
-<div id="error-popup">CRITICAL ERROR: UNAUTHORIZED USER<br>ENCRYPTION BREACH LOGGED.</div>
+<div id="callScreen">
+<div class="phone">📞</div>
+<div>connecting...</div>
+</div>
 
-<section id="scr-lock" class="screen">
-    <div class="terminal-box" id="main-box">
-        <h1 class="owen-header">OWEN FILES</h1>
-        <div style="font-size: 40px; color: var(--red); cursor: pointer;" onclick="devBypass()">🔒</div>
-        <div id="timer" class="timer">04:00:00</div>
-        <p id="lock-msg" style="color: #444; font-size: 9px; letter-spacing: 2px;">SECURE_ROOT_ACCESS_REQUIRED</p>
-        <button id="unlock-btn" class="sys-btn" onclick="startBootSequence()">[ DECRYPT_ARCHIVE ]</button>
-    </div>
-</section>
+<div id="directory"></div>
 
-<section id="scr-boot" class="screen">
-    <div class="terminal-box">
-        <div id="log-container"></div>
-    </div>
-</section>
+<div id="viewer"></div>
 
-<section id="scr-dir" class="screen">
-    <div class="terminal-box">
-        <h1 style="font-size: 10px; color: #444; margin-bottom: 20px;">/ROOT/HIDDEN_ARCHIVE</h1>
-        <div id="dir-container" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
-    </div>
-</section>
+<div id="crash">system error</div>
 
-<section id="scr-view" class="screen">
-    <div class="terminal-box">
-        <div id="text-output"></div>
-        <div style="display:flex; gap: 20px;">
-            <button id="next-btn" class="sys-btn" onclick="backToDir()">[ RETURN_TO_ROOT ]</button>
-            <button id="final-btn" class="sys-btn" onclick="finalLock()">[ PURGE_ALL_DATA ]</button>
-        </div>
-    </div>
-</section>
+<audio id="ring" loop>
+<source src="https://cdn.pixabay.com/audio/2022/03/15/audio_27e6c0c4a4.mp3">
+</audio>
 
 <script>
-    let audioCtx, gainNode;
-    let clickCount = 0;
-    let errorActive = false;
-    let unlockedProgress = 0; // Tracks which file they are on
+const unlock="hamburger"
+const target=new Date()
+target.setDate(target.getDate()+1)
+target.setHours(17,0,0,0)
 
-    function initAudio() {
-        document.getElementById('audio-trigger').style.display = 'none';
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        gainNode = audioCtx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(45, audioCtx.currentTime); 
-        gainNode.gain.setValueAtTime(0.015, audioCtx.currentTime);
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        osc.start();
-    }
+const files=[
+{
+title:"file 1",
+text:`zac was everywhere
+bars parties nights that never ended
+then one day he stopped
+no warning no goodbye just silence
+last person seen with <span class="redacted">Owen</span>`
+},
+{
+title:"file 2",
+text:`people said zac needed space
+but his phone kept ringing unanswered
+messages sent but never opened
+his last location pinged near <span class="redacted">Owen</span>s place`
+},
+{
+title:"file 3",
+text:`security footage missing
+bar cameras conveniently offline
+bartender remembers zac leaving with <span class="redacted">Owen</span>`
+},
+{
+title:"file 4",
+text:`police questioned everyone
+stories didnt match
+<span class="redacted">Owen</span> changed details every time`
+},
+{
+title:"file 5",
+text:`neighbors reported yelling
+then silence
+a car leaving at 2am
+registered to <span class="redacted">Owen</span>`
+},
+{
+title:"file 6",
+text:`evidence went missing
+blood cleaned too well
+someone knew what they were doing
+<span class="redacted">Owen</span> lawyered up`
+},
+{
+title:"file 7",
+text:`confession recorded but never filed
+he said zac begged
+said it was an accident
+said his name
+<span class="redacted">Owen</span>`
+}
+]
 
-    function playSound(freq, type, vol, duration) {
-        if(!audioCtx) return;
-        const osc = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        g.gain.setValueAtTime(vol, audioCtx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-        osc.connect(g);
-        g.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-    }
+let unlocked=0
 
-    const story = [
-        "DOSSIER_001: Most people saw him as the golden boy. He was the athlete, the friend, the person everyone trusted implicitly. But Owen saw the truth—a calculated coldness behind that practiced smile. While the world was blinded by the charm of <span class='redact' onclick='revealName(this, 1)'>#####</span>, Owen was cataloging the moments where the mask slipped. He didn't realize that by watching the hunter, he had become the prey.",
-        "DOSSIER_002: Owen vanished on a Tuesday. His car was found in a ditch, engine still warm, but Owen was gone. Security footage showed a dark figure following him into the unlit section of the lot. That figure, moving with a predatory confidence that only one person possessed, was <span class='redact' onclick='revealName(this, 2)'>#####</span>. The police called it a 'missing persons' case; Owen knew it was his end.",
-        "DOSSIER_003: They never checked the old storm cellar hidden beneath the floorboards of the house owned by <span class='redact' onclick='revealName(this, 3)'>#####</span>. It was a concrete tomb, soundproofed and freezing. Owen spent forty-eight hours in total darkness, listening to the heavy footsteps pacing above his head, knowing exactly who was standing on the other side of the hatch.",
-        "DOSSIER_004: We found Owen's broken glasses twisting deep in a trash bin. When we checked the lockers, we found black tactical gloves inside the bag of <span class='redact' onclick='revealName(this, 4)'>#####</span>. He didn't flinch. He just smiled that golden-boy smile and told us Owen had probably just run away from the pressure.",
-        "DOSSIER_005: The basement was a stage. Inside, they found a single chair and cameras mounted in the corners. There were polaroids of Owen in distress, each one dated and signed by <span class='redact' onclick='revealName(this, 5)'>#####</span>. He wasn't just holding Owen; he was documenting the breaking of a spirit.",
-        "DOSSIER_006: A recovered recorder revealed Owen's final words. He spoke of the psychological games, the way his captor would sit in the corner and describe how his family had stopped looking. Owen whispers the name <span class='redact' onclick='revealName(this, 6)'>#####</span> just as the door begins to creak open one last time.",
-        "DOSSIER_007: The data leak has been detected. The one who built this archive is no longer in control. Owen is gone, and the predator is looking for a new subject. Check the locks on your doors. The person who has been watching you this entire time is <span class='redact' onclick='revealName(this, 7)'>#####</span>."
-    ];
+function tick(){
+const now=new Date()
+const diff=target-now
+if(diff<=0){
+startCall()
+return
+}
+const h=Math.floor(diff/1000/60/60)
+const m=Math.floor(diff/1000/60)%60
+const s=Math.floor(diff/1000)%60
+timer.innerText=`${h}:${m}:${s}`
+}
+setInterval(tick,1000)
 
-    function devBypass() {
-        if(errorActive) return;
-        clickCount++;
-        playSound(150, 'square', 0.1, 0.1);
-        if (clickCount === 3) {
-            document.getElementById('unlock-btn').style.display = "block";
-            document.getElementById('timer').innerText = "00:00:00";
-            playSound(700, 'sine', 0.2, 0.4);
-        } else if (clickCount > 6) { triggerError(); }
-    }
+password.onchange=()=>{
+if(password.value===unlock) startCall()
+}
 
-    function triggerError() {
-        errorActive = true;
-        document.getElementById('error-popup').style.display = 'block';
-        document.getElementById('main-box').classList.add('shake');
-        playSound(80, 'sawtooth', 0.3, 1.5);
-        setTimeout(() => {
-            document.getElementById('error-popup').style.display = 'none';
-            document.getElementById('main-box').classList.remove('shake');
-            clickCount = 0; errorActive = false;
-        }, 2000);
-    }
+function startCall(){
+timerScreen.style.display="none"
+callScreen.style.display="flex"
+ring.play()
+setTimeout(()=>{
+ring.pause()
+callScreen.style.display="none"
+showDirectory()
+},10000)
+}
 
-    function checkInitialState() {
-        if (!localStorage.getItem('lock_time')) {
-            localStorage.setItem('lock_time', new Date().getTime() + (4 * 60 * 60 * 1000));
-        }
-        runClock();
-    }
+function showDirectory(){
+directory.style.display="block"
+renderFiles()
+}
 
-    function runClock() {
-        showScreen('scr-lock');
-        const timerElement = document.getElementById('timer');
-        const unlockBtn = document.getElementById('unlock-btn');
-        const clockInterval = setInterval(() => {
-            const now = new Date().getTime();
-            const end = localStorage.getItem('lock_time');
-            const diff = end - now;
-            if (diff <= 0) {
-                clearInterval(clockInterval);
-                timerElement.innerText = "00:00:00";
-                if (localStorage.getItem('final_done') !== 'true') unlockBtn.style.display = "block";
-                return;
-            }
-            const h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
-            timerElement.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }, 1000);
-    }
+function renderFiles(){
+directory.innerHTML=""
+for(let i=0;i<=unlocked;i++){
+const d=document.createElement("div")
+d.className="file"
+d.innerText=files[i].title
+d.onclick=()=>openFile(i)
+directory.appendChild(d)
+}
+}
 
-    function startBootSequence() {
-        showScreen('scr-boot');
-        const log = document.getElementById('log-container');
-        const lines = ["> AUTHENTICATING...", "> ACCESS_GRANTED", "> LOADING_ROOT...", "> READY."];
-        let i = 0;
-        const logInt = setInterval(() => {
-            log.innerHTML += lines[i] + "<br>";
-            playSound(300, 'sine', 0.05, 0.05);
-            i++;
-            if(i >= lines.length) { clearInterval(logInt); setTimeout(() => { enterDirectory(); }, 800); }
-        }, 300);
-    }
+function openFile(i){
+viewer.style.display="block"
+directory.style.display="none"
+viewer.innerHTML=`<h2>${files[i].title}</h2><p>${files[i].text}</p><button onclick="next(${i})">next</button>`
+document.querySelectorAll(".redacted").forEach(r=>{
+r.onclick=()=>r.classList.add("open")
+})
+}
 
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
+function next(i){
+if(i===6){
+crashNow()
+return
+}
+unlocked++
+viewer.style.display="none"
+showDirectory()
+}
 
-    function enterDirectory() { showScreen('scr-dir'); renderDir(); }
+function crashNow(){
+viewer.style.display="none"
+crash.style.display="flex"
+setTimeout(()=>{
+crash.style.display="none"
+unlocked++
+showDirectory()
+},3000)
+}
 
-    function renderDir() {
-        const container = document.getElementById('dir-container');
-        container.innerHTML = "";
-        for (let i = 0; i < 7; i++) {
-            const row = document.createElement('div');
-            const isUnlocked = i <= unlockedProgress;
-            row.className = `file-row ${isUnlocked ? 'unlocked' : 'locked'}`;
-            
-            let status = "[LOCKED]";
-            if (i < unlockedProgress) status = "[READ]";
-            else if (i === unlockedProgress) status = "[OPEN]";
-
-            row.innerHTML = `<span>RECORD_00${i+1}.LOG</span> <span>${status}</span>`;
-            if(isUnlocked) row.onclick = () => openFile(i);
-            container.appendChild(row);
-        }
-    }
-
-    function openFile(idx) {
-        showScreen('scr-view');
-        const out = document.getElementById('text-output');
-        document.getElementById('next-btn').style.display = "none";
-        document.getElementById('final-btn').style.display = "none";
-        let i = 0; let fullHtml = story[idx]; out.innerHTML = "";
-        const typeTimer = setInterval(() => {
-            if (fullHtml.charAt(i) === '<') i = fullHtml.indexOf('>', i) + 1;
-            else i++;
-            out.innerHTML = fullHtml.substring(0, i);
-            if (i % 2 === 0) playSound(180, 'sine', 0.03, 0.02);
-            if (i >= fullHtml.length) { clearInterval(typeTimer); out.innerHTML = fullHtml; }
-        }, 20);
-    }
-
-    function revealName(el, num) {
-        playSound(100, 'square', 0.1, 0.2);
-        el.innerText = "ZAC"; el.className = "revealed";
-        
-        // Progress logic: Unlock next file if they reveal the name
-        if (unlockedProgress === num - 1) {
-            unlockedProgress = num;
-        }
-
-        if (num === 7) {
-            document.getElementById('flash').style.display = 'block';
-            setTimeout(() => { document.getElementById('flash').style.display = 'none'; }, 100);
-            document.getElementById('final-btn').style.display = "block";
-        } else {
-            document.getElementById('next-btn').style.display = "block";
-        }
-    }
-
-    function backToDir() { enterDirectory(); }
-
-    function finalLock() {
-        localStorage.setItem('final_done', 'true');
-        localStorage.setItem('lock_time', new Date().getTime() + (4 * 60 * 60 * 1000));
-        playSound(40, 'sawtooth', 0.3, 1.5);
-        document.getElementById('lock-msg').innerText = "ARCHIVE_PERMANENTLY_PURGED";
-        document.getElementById('unlock-btn').style.display = "none";
-        runClock();
-    }
+secret.onclick=()=>{
+viewer.style.display="block"
+directory.style.display="none"
+viewer.innerHTML=`
+<h2>last known footage</h2>
+<p class="reveal">OWEN</p>
+<p>name zac</p>
+<p>last seen with OWEN</p>
+`
+}
 </script>
+
 </body>
 </html>
